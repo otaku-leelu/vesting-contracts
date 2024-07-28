@@ -1,28 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
 
-// importing necessary libarries from openzeppelin
+// importing necessary libraries from openzeppelin
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Vesting is Ownable {
     IERC20 public token;
 
-    //roles for the beneficiaires
-    enum Role{User, Partner, Team}
+    //roles for the beneficiaries
+    enum Role {User, Partner, Team}
     
-    //initialized sturct called schedule for the beneficiary
+    //initialized struct called schedule for the beneficiary
     struct Schedule {
         uint256 cliff;
         uint256 start;
         uint256 duration;
         uint256 amount;
         uint256 released;
+        uint256 lastClaimTime; // tracks the last time tokens were claimed
     }
 
     //mapping to store and check the beneficiaries (and added to track the no. of users)
-    mapping (address => Schedule) public beneficiaries;
-    mapping (address => bool) public addBeneficiaries;
+    mapping(address => Schedule) public beneficiaries;
+    mapping(address => bool) public addBeneficiaries;
 
     event BeneficiaryAdded(address indexed beneficiary, uint256 amount, Role role);
     event TokensReleased(address indexed beneficiary, uint256 amount);
@@ -31,13 +32,13 @@ contract Vesting is Ownable {
         token = _token;
     }
 
-    // adding new beneficicary
+    // adding new beneficiary
     function addBeneficiary(address _beneficiary, uint256 _cliff, uint256 _duration, Role _role) external onlyOwner {
         // check if they exist or not
         require(!addBeneficiaries[_beneficiary], "beneficiary already added");
 
         uint256 totalTokens = token.balanceOf(address(this));
-        uint256 amount = 0;
+        uint256 amount;
 
         if (_role == Role.User) {
             amount = totalTokens * 50 / 100; // 50% of total tokens allocated to users
@@ -46,7 +47,7 @@ contract Vesting is Ownable {
         } else if (_role == Role.Team) {
             amount = totalTokens * 25 / 100; // 25% of total tokens allocated to teams
         } else {
-            revert("Invalid role");
+            revert("invalid role");
         }
 
         beneficiaries[_beneficiary] = Schedule({
@@ -54,32 +55,42 @@ contract Vesting is Ownable {
             start: block.timestamp, // vesting start time
             duration: _duration, // duration
             amount: amount, // amount allocated
-            released: 0 // amount/tokens released (set to zero because new members have empty balances)
+            released: 0, // amount/tokens released (set to zero because new members have empty balances)
+            lastClaimTime: 0 // initialize last claim time to zero
         });
 
         addBeneficiaries[_beneficiary] = true; // marking the beneficiary
         emit BeneficiaryAdded(_beneficiary, amount, _role);
     }
 
-    // function to calculate the amount relealse
+    // function to calculate the amount released
     function _vestedAmount(Schedule memory schedule) internal view returns (uint256) {
         if (block.timestamp < schedule.cliff) {
             return 0;
         }
-        if (block.timestamp >= schedule.start + schedule.duration) {
+
+        uint256 elapsedTime = block.timestamp - schedule.start;
+        uint256 monthsElapsed = elapsedTime / 30 days; // calculates the number of months elapsed
+        uint256 totalMonths = schedule.duration / 30 days; // total vesting duration in months
+
+        if (monthsElapsed >= totalMonths) {
             return schedule.amount - schedule.released;
         }
-        return (schedule.amount * (block.timestamp - schedule.start)) / schedule.duration - schedule.released;
+
+        uint256 vestedAmount = (schedule.amount * monthsElapsed) / totalMonths;
+        return vestedAmount - schedule.released;
     }
 
     //function to release the amount
     function releaseTokens() external {
         Schedule storage schedule = beneficiaries[msg.sender];
         require(block.timestamp >= schedule.cliff, "cliff period not reached!");
+
         uint256 vested = _vestedAmount(schedule);
         require(vested > 0, "no vested tokens available");
 
-        schedule.released = schedule.released + vested;
+        schedule.released += vested;
+        schedule.lastClaimTime = block.timestamp;
         require(token.transfer(msg.sender, vested), "token transfer failed");
 
         emit TokensReleased(msg.sender, vested);
