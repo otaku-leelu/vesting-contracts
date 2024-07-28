@@ -41,9 +41,7 @@ Test the code to ensure it passes all the test cases.
 ##### note: if the the _'truffle test'_ doesnt work and shows errors check the hosturl, portnumber in _truffle-config.js_ and in _ganache's_ settings like this:
 
 ![Ganache](image.png)
-_ganache settings_
 ![truffle-config.js](image-1.png)
-_truffle-config.js_
 
 ## Run
 
@@ -54,14 +52,8 @@ Later run the following command which runs scripts, updates the abi, contractAdd
     npm start
 
 ![npm start](image-2.png)
-_npm start and compile_
 ![migrations](image-3.png)
-_migrations getting processed_
 ![url address](image-4.png)
-_successfully deployed on local host_
 ![local host](image-5.png)
-_local host_
 ![warning](image-6.png)
-_if not tried with metamask_
 ![meta mask](image-7.png)
-_meta mask login_
