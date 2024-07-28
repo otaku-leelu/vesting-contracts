@@ -8,6 +8,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Vesting is Ownable {
     IERC20 public token;
+
+    //roles for the beneficiaires
+    enum Role{User, Partner, Team}
     
     //initialized sturct called schedule for the beneficiary
     struct Schedule {
@@ -18,11 +21,14 @@ contract Vesting is Ownable {
         uint256 released;
     }
 
-    //mapping to store and check the beneficiaries
+    //mapping to store and check the beneficiaries (and added to track the no. of users)
     mapping (address => Schedule) public beneficiaries;
     mapping (address => bool) public addBeneficiaries;
+    uint256 public totalUsers;
+    uint256 public totalPartners;
+    uint256 public totalTeams;
 
-    event BeneficiaryAdded(address indexed beneficiary, uint256 amount);
+    event BeneficiaryAdded(address indexed beneficiary, uint256 amount, Role role);
     event TokensReleased(address indexed beneficiary, uint256 amount);
     event VestingStarted();
 
@@ -31,18 +37,37 @@ contract Vesting is Ownable {
     }
 
     // adding new beneficicary
-    function addBeneficiary(address _beneficiary, uint256 _amount, uint256 _cliff, uint256 _duration) external onlyOwner () {
+    function addBeneficiary(address _beneficiary, uint256 _amount, uint256 _cliff, uint256 _duration, Role _role) external onlyOwner () {
         // check if they exisit or not
         require(!addBeneficiaries[_beneficiary], "beneficiary already added");
+
+        uint256 amount;
+        uint256 totalTokens = token.balanceOf(address(this));
+        //division of amount/tokens
+        if (_role == Role.User) {
+            totalUsers++;
+            amount = (totalTokens * 50) / 100 / totalUsers; // 50% of amount is given to the users
+        } 
+        else if (_role == Role.Partner) {
+            totalPartners++;
+            amount = (totalTokens * 25) / 100 / totalPartners; // 25% of amount is given to the partners
+        } 
+        else if (_role == Role.Team) {
+            totalTeams++;
+            amount = (totalTokens * 25) / 100 / totalTeams; // 25% of amount is given to the teams
+        } else {
+            revert("Invalid role");
+        }
+
         beneficiaries[_beneficiary] = Schedule({
             cliff: block.timestamp + _cliff, // cliff period start
             start: block.timestamp, // vesting start time
             duration: _duration, // duration
-            amount: _amount, // amount allocated
+            amount: amount, // amount allocated
             released: 0 // amount/tokens released (set to zero because new members have empty balances)
         });
         addBeneficiaries[_beneficiary] = true; //marking the beneficiary
-        emit BeneficiaryAdded(_beneficiary, _amount);
+        emit BeneficiaryAdded(_beneficiary, _amount, _role);
     }
 
     // function to calculate the amount relealse
