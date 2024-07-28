@@ -92,7 +92,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -131,7 +132,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -144,7 +146,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [],
@@ -164,7 +167,8 @@
         }
       ],
       "stateMutability": "view",
-      "type": "function"
+      "type": "function",
+      "constant": true
     },
     {
       "inputs": [
@@ -11845,14 +11849,79 @@
   },
   "networks": {
     "5777": {
-      "events": {},
+      "events": {
+        "0x4e7ee520cdf23a6622a36304e4b1833a45cd853e58d3e40659b1f2eec12eae02": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "enum Vesting.Role",
+              "name": "role",
+              "type": "uint8"
+            }
+          ],
+          "name": "BeneficiaryAdded",
+          "type": "event"
+        },
+        "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "name": "OwnershipTransferred",
+          "type": "event"
+        },
+        "0xc7798891864187665ac6dd119286e44ec13f014527aeeb2b8eb3fd413df93179": {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "beneficiary",
+              "type": "address"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "TokensReleased",
+          "type": "event"
+        }
+      },
       "links": {},
-      "address": "0x6D7dB06545883BF1fb62e08f25159a7dfBBC6694",
-      "transactionHash": "0x431f64677e39b5508e68467a2d457aed823256d44a91609c61cef10d0116ff14"
+      "address": "0x24a150C880Ce9D9965D97E35784613e2e9bc6bAD",
+      "transactionHash": "0x788bf39e81b90d64b69b36a7eab08214949ba33403d22096f3fbfd5ca00932f9"
     }
   },
   "schemaVersion": "3.4.16",
-  "updatedAt": "2024-07-28T10:24:29.907Z",
+  "updatedAt": "2024-07-28T19:20:35.757Z",
+  "networkType": "ethereum",
   "devdoc": {
     "kind": "dev",
     "methods": {

@@ -1,6 +1,19 @@
 {
+  "name": "vesting-app",
+  "version": "1.0.0",
+  "description": "Vesting contract",
+  "main": "index.js",
+  "scripts": {
+    "migrate": "truffle migrate --reset",
+    "update-frontend": "node scripts/update-frontend.js",
+    "start": "npm run migrate && npm run update-frontend && serve src"
+  },
   "dependencies": {
     "@openzeppelin/contracts": "^4.6.0",
-    "@openzeppelin/test-helpers": "^0.5.16"
+    "@openzeppelin/test-helpers": "^0.5.16",
+    "web3": "^4.11.1"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3"
   }
 }
