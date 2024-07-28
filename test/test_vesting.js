@@ -114,7 +114,7 @@ contract("Vesting", (accounts) => {
     }
   });
 
-  // checking the token allocation
+  // allocates the tokens equally to the same role beneficiaries
   it("should finalize token distribution and allocate correctly", async () => {
     // Retrieve the beneficiaries' details again after adding if necessary
     const beneficiary1 = await vestingInstance.beneficiaries(user1);
