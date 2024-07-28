@@ -51,9 +51,5 @@ Later run the following command which runs scripts, updates the abi, contractAdd
 
     npm start
 
-![npm start](image-2.png)
-![migrations](image-3.png)
-![url address](image-4.png)
-![local host](image-5.png)
 ![warning](image-6.png)
 ![meta mask](image-7.png)
