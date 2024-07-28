@@ -61,16 +61,17 @@ contract Vesting is Ownable {
         emit BeneficiaryAdded(_beneficiary, amount, _role);
     }
 
-    // function to calculate the amount relealse
+    // function to calculate the amount released
     function _vestedAmount(Schedule memory schedule) internal view returns (uint256) {
         if (block.timestamp < schedule.cliff) {
             return 0;
         }
-        if (block.timestamp >= schedule.start + schedule.duration) {
+        if (block.timestamp >= schedule.cliff + schedule.duration) {
             return schedule.amount - schedule.released;
         }
-        return (schedule.amount * (block.timestamp - schedule.start)) / schedule.duration - schedule.released;
-    }
+            return ((schedule.amount * (block.timestamp - schedule.cliff)) / schedule.duration) - schedule.released;
+}
+
 
     //function to release the amount
     function releaseTokens() external {
@@ -85,3 +86,4 @@ contract Vesting is Ownable {
         emit TokensReleased(msg.sender, vested);
     }
 }
+
